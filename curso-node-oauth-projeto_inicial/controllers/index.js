@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 exports.showIndex = (req, res, next) => {
   res.render("index");
@@ -16,9 +17,10 @@ exports.get404Page = (req, res, next) => {
   res.status(404).render("404");
 };
 
-exports.signup = (req, res, next) => {
+exports.signup = async (req, res, next) => {
   const { username, email, password } = req.body;
-  const user = new User(username, email, password);
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = new User(username, email, hashedPassword);
   try {
     user.save();
     res.redirect("/");
@@ -41,4 +43,15 @@ exports.login = async (req, res, next) => {
     console.log(error);
     res.render("index");
   }
+};
+
+exports.checkAuth = (req, res, next) => {
+    //Estrutura inicial para implementação de autenticação.
+    const auth = false;
+    if (auth) {
+        next();
+    } else {
+        res.redirect("/");
+    }
+
 };
